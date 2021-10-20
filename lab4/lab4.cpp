@@ -69,10 +69,61 @@ void SimpleIteration(double x, double y)
 	}while (nevNorm > 0.0001 && error > 0.0001);
 
 }
+
+vector<vector<double>> dF(double x, double y)
+{
+	vector<vector<double>> f(2, (vector<double>(2)));
+
+	f[0][0] = 1;
+	f[0][1] = -cos(y + 0.5);
+	f[1][0] = -sin(x - 2);
+	f[1][1] = 1;
+
+	return f;
+}
+
+void NewtonMethod(double x, double y)
+{
+	vector<vector<double>> Jac = Jacobian(x, y);
+	int itr = 0;
+	double error = 1, nevNorm = 1;
+	vector<vector<double>> f = dF(x, y);
+
+	do
+	{
+		itr++;
+
+		f = dF(x, y);
+		f = ReverseMatrix(f);
+		double f1 = F1(x, y);
+		double f2 = F2(x, y);
+
+		double xNew = x - (f[0][0] * f1 + f[0][1] * f2);
+		double yNew = y - (f[1][0] * f1 + f[1][1] * f2);
+
+		Jac = Jacobian(xNew, yNew);
+		double q = cubic_norm(Jac);
+
+		vector<double> nev;
+
+		nev.push_back(abs(F1(xNew, yNew)));
+		nev.push_back(abs(F2(xNew, yNew)));
+		nevNorm = ThirdVectorNorm(nev);
+
+		error = q * ThirdVectorNorm({ xNew - x,yNew - y }) / (1 - q);
+
+		cout << itr << " " <<xNew<<" " << yNew<<" " << nevNorm << " " << fixed << setprecision(15) << F1(xNew,yNew) << " " << F2(xNew,yNew) << endl;//scientific form
+
+		x = xNew;
+		y = yNew;
+
+	} while (nevNorm > 0.0001 && error > 0.0001||itr<3);
+}
+
 int main()
 {
     std::cout << "Hello World!\n";
-	SimpleIteration(-0.1, 0.5);
+	NewtonMethod(-0.1, 0.5);
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
