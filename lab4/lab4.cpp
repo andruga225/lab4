@@ -38,6 +38,22 @@ double phiy(double x)
 {
 	return -cos(x - 2);
 }
+
+double FF(double x, double y)
+{
+	return pow(F1(x,y),2) + pow(F2(x,y),2);
+}
+
+double DFFX(double x, double y)
+{
+	return 2 * (x + 1 - sin(y + 0.5)) + 2 * (y + cos(x - 2)) * (-sin(x - 2));
+}
+
+double DFFY(double x, double y)
+{
+	return 2 * (x + 1 - sin(y + 0.5)) * (-cos(y + 0.5)) + 2 * (y + cos(x - 2));
+}
+
 void SimpleIteration(double x, double y)
 {
 	vector<vector<double>> Jac = Jacobian(x, y);
@@ -120,10 +136,54 @@ void NewtonMethod(double x, double y)
 	} while (nevNorm > 0.0001 && error > 0.0001||itr<3);
 }
 
+
+void Gradient(double x, double y)
+{
+
+	vector<vector<double>> Jac = Jacobian(x, y);
+	int itr = 1;
+	double error = 1, nevNorm = 1;
+	double xNew, yNew;
+
+	do
+	{
+		double alpha = 1;
+		double lambda = 0.5;
+
+		double dx = DFFX(x, y);
+		double dy = DFFY(x, y);
+
+		while (FF(x - alpha * dx, y - alpha * dy) >= FF(x, y))
+			alpha *= lambda;
+
+		xNew = x - alpha * dx;
+		yNew = y - alpha * dy;
+
+		Jac = Jacobian(xNew, yNew);
+		double q = cubic_norm(Jac);
+
+		vector<double> nev;
+
+		nev.push_back(abs(F1(xNew, yNew)));
+		nev.push_back(abs(F2(xNew, yNew)));
+
+		nevNorm = ThirdVectorNorm(nev);
+		error = ThirdVectorNorm({ xNew - x,yNew - y }) * q / (1 - q);
+
+		cout <<fixed<< setprecision(8)<< itr << " " << xNew << " " << yNew<<" "<<alpha<<" "<<nevNorm<<" "<< F1(xNew, yNew) << " " << F2(xNew, yNew) <<" "<<nevNorm<< endl;
+		
+		itr++;
+		x = xNew;
+		y = yNew;
+
+	} while (nevNorm > 0.0001 && error > 0.0001);
+}
+
 int main()
 {
     std::cout << "Hello World!\n";
-	NewtonMethod(-0.1, 0.5);
+	//NewtonMethod(-0.1, 0.5);
+	Gradient(-0.1, 0.5);
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
