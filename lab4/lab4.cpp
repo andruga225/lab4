@@ -23,7 +23,10 @@ vector<vector<double>> Jacobian(double x, double y)
 		Jac[1][1] = 0.5 * cos(y - 0.5);
 	}else
 	{
-		//your variant
+		Jac[0][0] = 0;
+		Jac[0][1] = -cos(y - 1);
+		Jac[1][0] = cos(x + 1);
+		Jac[1][1] = 0;
 	}
 
 	return Jac;
@@ -34,7 +37,7 @@ double F1(double x, double y)
 	if (variant == 4)
 		return cos(x) + y - 1.5;
 	else
-		return 1;//your variant
+		return x + sin(y - 1) - 1.3;
 }
 
 double F2(double x, double y)
@@ -42,7 +45,7 @@ double F2(double x, double y)
 	if (variant == 4)
 		return 2 * x - sin(y - 0.5) - 1;
 	else
-		return 1;//your variant
+		return y - sin(x + 1) - 0.8;
 }
 
 double FF(double x, double y)
@@ -55,7 +58,7 @@ double DFFX(double x, double y)
 	if (variant == 4)
 		return 2 * (cos(x) + y - 1.5) * (-sin(x)) + 2 * (2 * x - sin(y - 0.5) - 1) * 2;
 	else
-		return 1;//your variant
+		return 2 * sin(y - 1) + 2 * x - 2.6 - 2 * (y - 0.8) * cos(x + 1) + sin(2 * x + 2);
 }
 
 double DFFY(double x, double y)
@@ -63,7 +66,7 @@ double DFFY(double x, double y)
 	if (variant == 4)
 		return 2 * (cos(x) + y - 1.5) + 2 * (2 * x - sin(y - 0.5) - 1) * (-cos(y - 0.5));
 	else
-		return 1;//your variant
+		return sin(2 * y - 2) + 2 * cos(y - 1) * (x - 1.3) + 2 * y - 1.6 - 2 * sin(x + 1);
 }
 
 void SimpleIteration(double x, double y)
@@ -82,9 +85,9 @@ void SimpleIteration(double x, double y)
 			yNew = 1.5-cos(x);
 		}else
 		{
-			//your variant
-			xNew = 1;
-			yNew = 1;
+			xNew = 1.3 - sin(y - 1);
+			yNew = 0.8 + sin(x + 1);
+
 		}
 
 		Jac = Jacobian(xNew, yNew);
@@ -115,7 +118,13 @@ vector<vector<double>> dF(double x, double y)
 		f[0][1] = 1;
 		f[1][0] = 2;
 		f[1][1] = -cos(y-0.5);
-	}else{}
+	}else
+	{
+		f[0][0] = 1;
+		f[0][1] = cos(y - 1);
+		f[1][0] = -cos(x + 1);
+		f[1][1] = 1;
+	}
 
 	return f;
 }
@@ -205,11 +214,18 @@ int main()
 {
 	if (variant == 4)
 		fout << "x0 = " << 0.5 << " y0 = " << 0.5 << endl;
+	else
+		fout << "x0 = " << 0.6 << " y0 = " << 1.8 << endl;
 
 	fout << "Метод простой итерации" << endl;
 	if (variant == 4) {
 		fout << "Fi1(x,y)=1.5-cos(x)" << endl;
 		fout << "Fi2(x,y)=0.5+0.5sin(y-0.5)" << endl;
+	}
+	else
+	{
+		fout << "Fi1(x,y)=1.3 - sin(y-1)" << endl;
+		fout << "Fi2(x,y)=0.8 + sin(x+1)" << endl;
 	}
 
 	fout << "Якобиан" << endl;
@@ -219,6 +235,11 @@ int main()
 		fout << "sin(x) 0.0" << endl;
 		fout << "0.0 -cos(y-0.5)" << endl;
 	}
+	else
+	{
+		fout << "0.0 -cos(y-1)" << endl;
+		fout << "cos(x+1) -0.0" << endl;
+	}
 
 	fout << "Значение" << endl;
 
@@ -226,6 +247,8 @@ int main()
 
 	if (variant == 4)
 		Jac = Jacobian(0.5, 0.5);
+	else
+		Jac = Jacobian(0.6, 1.8);
 
 	for(int i=0;i<Jac.size();++i)
 	{
@@ -238,7 +261,10 @@ int main()
 
 	fout << fixed << setprecision << cubic_norm(Jac) << endl;
 	fout << "Itr x y Норма невязки F1 F2 Норма якобиана" << endl;
-	SimpleIteration(0.5, 0.5);
+	if (variant == 4)
+		SimpleIteration(0.5, 0.5);
+	else
+		SimpleIteration(0.6, 1.8);
 
 	fout << "Метод Ньютона" << endl;
 	fout << "Матрица производных" << endl;
@@ -248,13 +274,25 @@ int main()
 		fout << "-sin(x) 1" << endl;
 		fout << "2 -cos(y-0.5)" << endl;
 	}
+	else
+	{
+		fout << "1 cos(y-1)" << endl;
+		fout << "-cos(x+1) 1" << endl;
+	}
 
 	fout << "Itr x y Норма невязки F1 F2" << endl;
-	NewtonMethod(0.5, 0.5);
+	if (variant == 4)
+		NewtonMethod(0.5, 0.5);
+	else
+		NewtonMethod(0.6, 1.8);
+
 
 	fout << "Метод градиентного спуска" << endl;
 	fout << "Itr x y Alfa Норма невязки F1 F2 FF k" << endl;
-	Gradient(0.5, 0.5);
+	if (variant == 4)
+		Gradient(0.5, 0.5);
+	else
+		Gradient(0.6, 1.8);
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
