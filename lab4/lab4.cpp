@@ -8,6 +8,8 @@
 
 using namespace std;
 
+int variant;
+
 vector<vector<double>> Jacobian(double x, double y)
 {
 	//Тут для его варика пока что
@@ -22,12 +24,18 @@ vector<vector<double>> Jacobian(double x, double y)
 
 double F1(double x, double y)
 {
-	return x - sin(0.5 + y) + 1;
+	if (variant == 4)
+		return cos(x)+y-1.5;
+	else
+		return;
 }
 
 double F2(double x, double y)
 {
-	return y + cos(x-2);
+	if (variant == 4)
+		return 2*x-sin(y-0.5)-1;
+	else
+		return;
 }
 
 double phix(double y)
