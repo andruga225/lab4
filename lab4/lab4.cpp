@@ -8,16 +8,18 @@
 
 using namespace std;
 
-int variant;
+int variant=4;
 
 vector<vector<double>> Jacobian(double x, double y)
 {
-	//Тут для его варика пока что
+	
 	vector<vector<double>> Jac(2, (vector<double>(2)));
-	Jac[0][0] = 0;
-	Jac[0][1] = cos(y+0.5);
-	Jac[1][0] = sin(x-2);
-	Jac[1][1] = 0;
+	if (variant == 4) {
+		Jac[0][0] = 0;
+		Jac[0][1] = 0.5*cos(y - 0.5);
+		Jac[1][0] = sin(x);
+		Jac[1][1] = 0;
+	}else{}
 
 	return Jac;
 }
@@ -27,7 +29,7 @@ double F1(double x, double y)
 	if (variant == 4)
 		return cos(x)+y-1.5;
 	else
-		return;
+		return 1;
 }
 
 double F2(double x, double y)
@@ -35,16 +37,7 @@ double F2(double x, double y)
 	if (variant == 4)
 		return 2*x-sin(y-0.5)-1;
 	else
-		return;
-}
-
-double phix(double y)
-{
-	return sin(0.5 + y) - 1;
-}
-double phiy(double x)
-{
-	return -cos(x - 2);
+		return 1;
 }
 
 double FF(double x, double y)
@@ -54,12 +47,18 @@ double FF(double x, double y)
 
 double DFFX(double x, double y)
 {
-	return 2 * (x + 1 - sin(y + 0.5)) + 2 * (y + cos(x - 2)) * (-sin(x - 2));
+	if (variant == 4)
+		return 2 * (cos(x) + y - 1.5) * (-sin(x)) + 2 * (2 * x - sin(y - 0.5) - 1) * 2;
+	else
+		return 1;
 }
 
 double DFFY(double x, double y)
 {
-	return 2 * (x + 1 - sin(y + 0.5)) * (-cos(y + 0.5)) + 2 * (y + cos(x - 2));
+	if (variant == 4)
+		return 2 * (cos(x) + y - 1.5) + 2 * (2 * x - sin(y - 0.5) - 1) * (-cos(y - 0.5));
+	else
+		return 1;
 }
 
 void SimpleIteration(double x, double y)
@@ -98,10 +97,12 @@ vector<vector<double>> dF(double x, double y)
 {
 	vector<vector<double>> f(2, (vector<double>(2)));
 
-	f[0][0] = 1;
-	f[0][1] = -cos(y + 0.5);
-	f[1][0] = -sin(x - 2);
-	f[1][1] = 1;
+	if (variant == 4) {
+		f[0][0] = -sin(x);
+		f[0][1] = 1;
+		f[1][0] = 2;
+		f[1][1] = -cos(y-0.5);
+	}else{}
 
 	return f;
 }
@@ -190,8 +191,9 @@ void Gradient(double x, double y)
 int main()
 {
     std::cout << "Hello World!\n";
-	//NewtonMethod(-0.1, 0.5);
-	Gradient(-0.1, 0.5);
+	//SimpleIteration(0.5, 0.5);
+	NewtonMethod(0.5, 0.5);
+	//Gradient(0.5, 0.5);
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
