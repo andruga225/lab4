@@ -105,7 +105,7 @@ void SimpleIteration(double x, double y)
 		x = xNew;
 		y = yNew;
 
-	}while (nevNorm > 0.0001 && error > 0.0001);
+	}while (nevNorm > 0.0001);
 
 }
 
@@ -164,7 +164,7 @@ void NewtonMethod(double x, double y)
 		x = xNew;
 		y = yNew;
 
-	} while (nevNorm > 0.0001 && error > 0.0001||itr<3);
+	} while (nevNorm > 0.0001||itr<3);
 }
 
 
@@ -207,7 +207,7 @@ void Gradient(double x, double y)
 		x = xNew;
 		y = yNew;
 
-	} while (nevNorm > 0.0001 && error > 0.0001);
+	} while (nevNorm > 0.0001);
 }
 
 int main()
