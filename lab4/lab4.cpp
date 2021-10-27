@@ -259,7 +259,7 @@ int main()
 
 	fout << "Норма" << endl;
 
-	fout << fixed << setprecision << cubic_norm(Jac) << endl;
+	fout << fixed << setprecision(4) << cubic_norm(Jac) << endl;
 	fout << "Itr x y Норма невязки F1 F2 Норма якобиана" << endl;
 	if (variant == 4)
 		SimpleIteration(0.5, 0.5);
